@@ -14,23 +14,35 @@ import io
 PROMPT = 'cute cat in the forest'
 timehoro1 = datetime.time(8,30)
 
-def startupCheck():
-    if os.path.isfile('key.json') and os.access('key.json', os.R_OK):
+def startupCheckTelegramApi():
+    if os.path.isfile('key_tg_api.json') and os.access('key_tg_api.json', os.R_OK):
         # checks if file exists
-        print ("Key exists and is readable, starting the program..")
-        with open("key.json", "r") as read_file:
+        print ("Telegram api key is ok")
+        with open("key_tg_api.json", "r") as read_file:
             key = json.load(read_file)
             return key
     else:
-        print("Enter a key:")
+        print("Enter a Telegram api key:")
         key_ = input()
-        with io.open(os.path.join('', 'key.json'), 'w') as db_file:
+        with io.open(os.path.join('', 'key_tg_api.json'), 'w') as db_file:
             db_file.write(json.dumps(key_))
 
+def startupCheckOpenaiApi():
+    if os.path.isfile('key_openai.json') and os.access('key_openai.json', os.R_OK):
+        # checks if file exists
+        print ("Openai api key exists and is readable, starting the program..")
+        with open('key_openai.json', "r") as read_file:
+            key = json.load(read_file)
+            return key
+    else:
+        print("Enter a Openai api key:")
+        key_ = input()
+        with io.open(os.path.join('', 'key_openai.json'), 'w') as db_file:
+            db_file.write(json.dumps(key_))
 
 #API
-bot = AsyncTeleBot(startupCheck())
-openai.api_key = "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"
+bot = AsyncTeleBot(startupCheckTelegramApi())
+openai.api_key = startupCheckOpenaiApi()
 
 #Buttons
 send_comp = types.KeyboardButton('Получить комплимент')
@@ -60,6 +72,7 @@ async def return_text_digit(msg):
         date_time_current = datetime.datetime.now()
         time_now = date_time_current.time()
         if time_now.hour == timehoro1.hour and time_now.minute == timehoro1.minute:
+            await bot.send_voice()
             await bot.send_message(msg.chat.id,soup.find("div", class_="_1E4Zo _3BLIa").text)
 
 
